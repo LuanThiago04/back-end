@@ -24,9 +24,9 @@ exports.create = (req, res) => {
     .catch(err => {
         res.status(500).send({
             message: 
-                err.message || "Deu b.o na criação do item."
-        })
-    })
+                err.message || "Algo deu errado na criação do item."
+        });
+    });
 };
 
 
@@ -34,7 +34,7 @@ exports.findAll = (req, res) => {
     const name = req.body.name;
     var condition = name ? { name: { [Op.like]: `%${name}%`} } :null;
 
-    items.findAll({where: condition})
+    Item.findAll({where: condition})
     .then(data => {
         res.send(data)
     })
@@ -42,20 +42,71 @@ exports.findAll = (req, res) => {
         res.status(500).send({
             message: 
                 err.message || "Deu b.o na listagem dos item."
-        })
-    })
+        });
+    });
 };
 
 exports.findOne = (req, res) => {
+    const id = req.params.id;
 
+    Item.findByPk(id)
+      .then(data => {
+          if (data) {
+              res.send(data);
+          } else {
+              res.status(404).send({
+                  message: `Não foi possível encontrar um item com o id=${id}.`
+              });
+          }
+      })
+      .catch(err => {
+          res.status(500).send({
+              message: "Ocorreu um erro ao tentar encontrar um item com o id=" + id
+          });
+      });
 };
 
 exports.update = (req, res) => {
+    const id = req.params.id;
 
+    Item.update(req.body, {
+        where: {id: id}
+    })
+      .then(num => {
+          if(num == 1 ){
+              res.send({
+                  message: "Deu bom na atualização do item."
+              });
+          } else {
+              res.send({
+                  message: `Não foi possível atualizar o item com o id=${id}.`
+              })
+          } 
+      })
 };
 
 exports.delete = (req, res) => {
+    const id = req.params.id;
 
+    Item.destroy({
+        where: { id: id}
+    })
+    .then(num => {
+        if(num == 1) {
+            res.send({
+                message: "O item foi excluído com sucesso!"
+            });
+        } else { 
+            res.send({
+                message: `Não foi possivel excluir o item com o id=${id}.`
+            });
+        }
+    })
+    .catch(err => {
+        res.status(500).send({
+            message: "Ocorreu um erro ao tentar apagar o item com o id= " + id
+        });
+    });
 };
 
 exports.deleteAll = (req, res) => {
