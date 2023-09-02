@@ -1,13 +1,13 @@
-const express = require("express");
 const cors = require("cors");
-
+const express = require("express");
 const app = express();
+
 
 var corsOptions = {
     origin: "http://localhost:8081"
 }
-
-app.use(cors(corsOptions));
+    
+    app.use(cors(corsOptions));
 
 app.use(express.json());
 
@@ -25,7 +25,7 @@ app.get("/", (req,res)=>{
     res.json({message: 'hello world!'})
 });
 
-const port = process.env.port || 8080;
+const port = process.env.port || 8088;
 app.listen(port, () => {
     console.log(`Server funcionando na porta ${port}.`);
 })
